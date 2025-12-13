@@ -20,8 +20,8 @@ SELECT
     CASE 
         WHEN bl.Status = 'Borrowed' AND bl.DueDate < CURDATE() THEN 'OVERDUE'
         WHEN bl.Status = 'Borrowed' AND bl.DueDate >= CURDATE() THEN 'ACTIVE'
-        ELSE bl.Status
-    END AS 'Book Status',
+        ELSE UPPER(bl.Status)
+    END AS BookStatus,
     CASE
         WHEN bl.DueDate < CURDATE() THEN DATEDIFF(CURDATE(), bl.DueDate)
         ELSE 0
