@@ -46,7 +46,7 @@ BEGIN
     
     IF var_penaltyAmount > 0 THEN
         INSERT INTO penalty (
-            BorrowLogID,
+            BorrowLogID,    
             DaysOverdue,
             PenaltyAmount,
             PenaltyReason
