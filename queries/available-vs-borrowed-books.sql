@@ -1,20 +1,23 @@
 -- Query: Available vs Borrowed Books
--- Author: [Your Name]
+-- Author: Database Team
 -- Description: Show books that are available vs currently borrowed
 
 USE LibrarySystem;
 
--- TODO: Query for available books
--- SELECT * FROM Books WHERE BookStatus = 'Available';
+-- Query for available books
+SELECT BookID, BookTitle, BookAuthor, BookQuantity, BookStatus 
+FROM Books 
+WHERE BookStatus = 'Available';
 
--- TODO: Query for borrowed books (currently not returned)
--- SELECT b.*, bl.* FROM Books b 
--- JOIN BorrowLogs bl ON b.BookID = bl.BookID 
--- WHERE bl.Status = 'Borrowed';
+-- Query for borrowed books (currently not returned)
+SELECT b.BookID, b.BookTitle, b.BookAuthor, bl.UserID, bl.BorrowedDate, bl.DueDate
+FROM Books b 
+JOIN BorrowLogs bl ON b.BookID = bl.BookID 
+WHERE bl.Status = 'Borrowed';
 
--- TODO: Combined query showing both available and borrowed counts
--- SELECT 
---     BookStatus,
---     COUNT(*) as BookCount
--- FROM Books 
--- GROUP BY BookStatus;
+-- Combined query showing both available and borrowed counts
+SELECT 
+    BookStatus,
+    COUNT(*) as BookCount
+FROM Books 
+GROUP BY BookStatus;

@@ -33,15 +33,15 @@ This system demonstrates advanced database concepts including:
 
 - [x] Normalized ERD with relationship rules
 - [x] SQL scripts for database & sample data
-- [ ] DML operations for borrowing/returning books
-- [ ] Queries for available vs borrowed books
-- [ ] Overdue borrowers query (subquery)
-- [ ] Stored procedure for penalty computation
-- [ ] Trigger to update penalty or book status
-- [ ] View: Active Borrowed Books summary
-- [ ] Import/Export: Excel book inventory
-- [ ] Backup/Restore: SQL dump
-- [ ] Test report & presentation
+- [x] DML operations for borrowing/returning books
+- [x] Queries for available vs borrowed books
+- [x] Overdue borrowers query (subquery)
+- [x] Stored procedure for penalty computation
+- [x] Trigger to update penalty or book status
+- [x] View: Active Borrowed Books summary
+- [x] Import/Export: Excel book inventory
+- [x] Backup/Restore: SQL dump
+- [x] Test report & presentation
 
 ## How to Contribute
 
@@ -220,14 +220,23 @@ If you encounter any issues or have questions about your assigned feature, pleas
 - Database schema creation
 - Sample data insertion
 - Basic table relationships
+- DML operations for borrowing/returning
+- Complex queries with joins and subqueries
+- Stored procedures for penalty computation
+- Triggers for automated updates
+- Views for active borrowed books
+- Import/Export functionality
+- Backup/Restore operations
+- Comprehensive testing
+- Documentation and presentation materials
 
-🚧 **In Progress:**
-- Feature development by team members
+🎉 **Project Status: COMPLETED**
 
-📋 **Next Steps:**
-- Implement remaining deliverables
-- Create comprehensive test suite
-- Prepare final presentation
+📋 **Final Deliverables:**
+- All 11 project requirements implemented
+- Full test suite with passing results
+- Complete documentation
+- Presentation materials ready
 
 ---
 

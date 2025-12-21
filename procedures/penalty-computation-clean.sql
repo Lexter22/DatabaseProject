@@ -10,15 +10,10 @@ CREATE PROCEDURE CalculatePenalty(IN borrowLogID INT)
 BEGIN
     DECLARE v_dueDate DATE;
     DECLARE v_returnDate DATE;
-    DECLARE v_status ENUM('Borrowed', 'Returned', 'Lost');
+    DECLARE v_status VARCHAR(20);
     DECLARE v_daysOverdue INT DEFAULT 0;
     DECLARE v_penaltyAmount DECIMAL(8,2) DEFAULT 0.00;
-    DECLARE v_penaltyReason ENUM('Lost', 'Overdue', 'Damage');
-    
-    -- Check if BorrowLogID exists
-    IF NOT EXISTS (SELECT 1 FROM BorrowLogs WHERE BorrowLogID = borrowLogID) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'BorrowLogID not found';
-    END IF;
+    DECLARE v_penaltyReason VARCHAR(20);
     
     -- Get borrow log details
     SELECT DueDate, ReturnDate, Status 

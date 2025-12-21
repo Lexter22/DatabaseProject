@@ -1,18 +1,24 @@
 -- DML Operations: Borrowing and Returning Books
--- Author: [Your Name]
+-- Author: Database Team
 -- Description: INSERT, UPDATE operations for book borrowing and returning
 
 USE LibrarySystem;
 
--- TODO: Implement borrowing operation
--- INSERT INTO BorrowLogs (UserID, BookID, BorrowedDate, DueDate, Status) VALUES (...);
+-- Borrow a book
+INSERT INTO BorrowLogs (UserID, BookID, BorrowedDate, DueDate, Status) 
+VALUES ('Student-001', 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 'Borrowed');
 
--- TODO: Implement return operation  
--- UPDATE BorrowLogs SET ReturnDate = CURDATE(), Status = 'Returned' WHERE ...;
+-- Update book quantity when borrowed
+UPDATE Books SET BookQuantity = BookQuantity - 1 WHERE BookID = 1;
 
--- TODO: Update book quantity when borrowed/returned
--- UPDATE Books SET BookQuantity = BookQuantity - 1 WHERE ...;
+-- Return a book
+UPDATE BorrowLogs 
+SET ReturnDate = CURDATE(), Status = 'Returned' 
+WHERE BorrowLogID = 1 AND Status = 'Borrowed';
 
--- Test your operations here
--- SELECT * FROM BorrowLogs;
--- SELECT * FROM Books;
+-- Update book quantity when returned
+UPDATE Books SET BookQuantity = BookQuantity + 1 WHERE BookID = 1;
+
+-- Test operations
+SELECT * FROM BorrowLogs;
+SELECT * FROM Books;
