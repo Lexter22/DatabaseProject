@@ -48,7 +48,7 @@ CREATE TABLE Penalty (
     BorrowedID INT,
     DaysOverdue INT,
     PenaltyAmount DECIMAL(8,2),
-    PenaltyReason ENUM('Lost', 'Overdue', 'Damage'),
+    PenaltyReason ENUM('Lost', 'Overdue'),
     FOREIGN KEY (BorrowLogID) REFERENCES BorrowLogs(BorrowLogID)
 );
 
