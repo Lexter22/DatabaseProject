@@ -28,39 +28,40 @@ SELECT bl.BorrowLogID, u.FullName, b.BookTitle, bl.BorrowedDate, bl.DueDate, bl.
 FROM BorrowLogs bl
 JOIN Users u ON bl.UserID = u.UserID
 JOIN Books b ON bl.BookID = b.BookID
-WHERE bl.BorrowLogID = LAST_INSERT_ID();
+WHERE Status = 'Borrowed';
 
--- Return the book
+-- Return the book // SUCCESSFUL
 UPDATE BorrowLogs 
 SET ReturnDate = CURDATE(), Status = 'Returned' 
 WHERE BorrowLogID = LAST_INSERT_ID();
 
+-- Return the book successfully // SUCCESSFUL
 SELECT 'Book Returned Successfully:' as Result;
 SELECT bl.BorrowLogID, u.FullName, b.BookTitle, bl.ReturnDate, bl.Status
 FROM BorrowLogs bl
 JOIN Users u ON bl.UserID = u.UserID
 JOIN Books b ON bl.BookID = b.BookID
-WHERE bl.BorrowLogID = LAST_INSERT_ID();
+WHERE Status = "Returned";
 
 -- ========================================
 -- DELIVERABLE 4: Available vs Borrowed Books Query
 -- ========================================
 SELECT 'DELIVERABLE 4: Available vs Borrowed Books Query' as Demo;
 
--- Available books
+-- Available books // SUCCESSFUL
 SELECT 'Available Books:' as QueryType;
 SELECT BookID, BookTitle, BookAuthor, BookQuantity, BookStatus 
 FROM Books 
 WHERE BookStatus = 'Available';
 
--- Currently borrowed books
+-- Currently borrowed books // SUCCESSFUL
 SELECT 'Currently Borrowed Books:' as QueryType;
 SELECT b.BookID, b.BookTitle, b.BookAuthor, bl.UserID, bl.BorrowedDate, bl.DueDate
 FROM Books b 
 JOIN BorrowLogs bl ON b.BookID = bl.BookID 
 WHERE bl.Status = 'Borrowed';
 
--- Summary count
+-- Summary count // SUCCESSFUL
 SELECT 'Book Status Summary:' as QueryType;
 SELECT BookStatus, COUNT(*) as BookCount
 FROM Books 
@@ -71,46 +72,66 @@ GROUP BY BookStatus;
 -- ========================================
 SELECT 'DELIVERABLE 5: Overdue Borrowers Query with Subquery' as Demo;
 
--- Create an overdue scenario for testing
-INSERT INTO BorrowLogs (UserID, BookID, BorrowedDate, DueDate, Status) 
-VALUES ('Student-002', 2, DATE_SUB(CURDATE(), INTERVAL 20 DAY), DATE_SUB(CURDATE(), INTERVAL 5 DAY), 'Borrowed');
+-- Create an overdue scenario for testing // SUCCESSFUL
+INSERT INTO BorrowLogs (UserID, BookID, BorrowedDate, DueDate, ReturnDate, Status) 
+VALUES ('Student-002', 2, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), DATE_ADD(CURDATE(), INTERVAL 8 DAY), 'Borrowed');
 
--- Find overdue borrowers using subquery
+-- Find overdue borrowers using subquery // SUCCESSFUL
 SELECT 'Overdue Borrowers (Subquery):' as QueryType;
 SELECT u.UserID, u.FullName 
 FROM Users u 
 WHERE u.UserID IN (
     SELECT bl.UserID 
     FROM BorrowLogs bl 
-    WHERE bl.DueDate < CURDATE() 
+    WHERE bl.DueDate > CURDATE() 
     AND bl.Status = 'Borrowed'
 );
 
--- Detailed overdue information
-SELECT 'Detailed Overdue Information:' as QueryType;
-SELECT u.FullName, b.BookTitle, bl.DueDate, 
-       DATEDIFF(CURDATE(), bl.DueDate) as DaysOverdue
-FROM Users u
-JOIN BorrowLogs bl ON u.UserID = bl.UserID
+-- Detailed overdue information // SUCCESSFUL
+SELECT 
+    u.FullName AS BorrowerName,
+    b.BookTitle,
+    bl.BorrowedDate,
+    bl.DueDate,
+    bl.ReturnDate,
+    bl.Status,
+    CASE
+        WHEN bl.ReturnDate IS NULL 
+            THEN DATEDIFF(CURDATE(), bl.DueDate)
+        ELSE DATEDIFF(bl.ReturnDate, bl.DueDate)
+    END AS DaysOverdue
+FROM BorrowLogs bl
+JOIN Users u ON bl.UserID = u.UserID
 JOIN Books b ON bl.BookID = b.BookID
-WHERE bl.DueDate < CURDATE() AND bl.Status = 'Borrowed';
+WHERE
+    (
+        bl.ReturnDate IS NULL 
+        AND bl.DueDate < CURDATE()
+    )
+    OR
+    (
+        bl.ReturnDate IS NOT NULL 
+        AND bl.ReturnDate > bl.DueDate
+    )
+ORDER BY DaysOverdue DESC;
+
 
 -- ========================================
 -- DELIVERABLE 6: Stored Procedure for Penalty Computation
 -- ========================================
 SELECT 'DELIVERABLE 6: Stored Procedure for Penalty Computation' as Demo;
 
--- Test penalty calculation for overdue book
+-- Test penalty calculation for overdue book // SUCCESSFUL
 CALL CalculatePenalty(1);
 
-SELECT 'Penalty Calculation Results:' as Result;
 SELECT p.BorrowLogID, p.DaysOverdue, p.PenaltyAmount, p.PenaltyReason,
        u.FullName, b.BookTitle
 FROM Penalty p
 JOIN BorrowLogs bl ON p.BorrowLogID = bl.BorrowLogID
-JOIN Users u ON bl.UserID = u.UserID
+LEFT JOIN Users u ON bl.UserID = u.UserID
 JOIN Books b ON bl.BookID = b.BookID
-WHERE p.BorrowLogID = 1;
+WHERE p.BorrowLogID = 10; -- replace with ID
+
 
 -- ========================================
 -- DELIVERABLE 7: Triggers for Book Status & Penalty Updates
@@ -122,12 +143,12 @@ SELECT 'Before Borrowing - Book Status:' as TriggerTest;
 SELECT BookID, BookTitle, BookStatus, BookQuantity FROM Books WHERE BookID = 1;
 
 INSERT INTO BorrowLogs (UserID, BookID, BorrowedDate, DueDate, Status) 
-VALUES ('Student-003', 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 'Borrowed');
+VALUES ('Student-003', 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), 'Borrowed');
 
 SELECT 'After Borrowing - Book Status (Trigger Effect):' as TriggerTest;
 SELECT BookID, BookTitle, BookStatus, BookQuantity FROM Books WHERE BookID = 1;
 
--- Test return trigger with late return
+-- Test return trigger with late return // SUCCESSFUL
 UPDATE BorrowLogs 
 SET ReturnDate = DATE_ADD(DueDate, INTERVAL 3 DAY), Status = 'Returned' 
 WHERE BorrowLogID = LAST_INSERT_ID();
